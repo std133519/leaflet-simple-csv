@@ -1,8 +1,93 @@
 var basemap = new L.TileLayer(baseUrl, {maxZoom: 17, attribution: baseAttribution, subdomains: subdomains, opacity: opacity});
 
 var center = new L.LatLng(0, 0);
+var popup = L.popup();
+var map = new L.Map('map', {center: center, zoom: 5, maxZoom: maxZoom, layers: [basemap]});
 
-var map = new L.Map('map', {center: center, zoom: 2, maxZoom: maxZoom, layers: [basemap]});
+ var customPopup = "Location Information";
+    
+    // Μέγεθος Popup 
+    var customOptions =
+        {
+        'minWidth': '500',
+		'minHeight': '500',
+        'className' : 'custom'
+        }
+
+//Προσθήκη market αντικειμένου
+var currentMarker;
+
+//Προσθήκη συνάρηρτησης για το κλικ στον Χάρτη
+map.on('click', onMapClick);
+
+//Συνάρτηση για το κλικ στον Χάρτη
+function onMapClick(e) {
+
+//Καταχώρηση marker επάνω στο click
+currentMarker  = L.marker(new L.LatLng(e.latlng.lat, e.latlng.lng));
+  //marker.bindPopup(customPopup,customOptions);
+ //Δημιουργία popup για την προσθήκη δεδομένων
+		popup
+		.setLatLng(e.latlng)
+		.setContent(getFormContent())
+		.openOn(map);
+//		markers.addLayer(currentMarker);	
+}
+//openWindow();
+
+//Συνάρτηση καταχώρησης τοποθεσίας
+function addLocationInformation() {
+	
+	 var popup = '<div class="popup-content"><table class="table table-striped table-bordered table-condensed">';
+		popup += '<tr><th>'+'Location'+'</th><td>'+ 'Home' +'</td></tr>';
+        popup += '<tr><th>'+'Longitude'+'</th><td>'+ currentMarker.getLatLng().lng +'</td></tr>';
+		popup += '<tr><th>'+'Latitude'+'</th><td>'+ currentMarker.getLatLng().lat +'</td></tr>';
+        popup += "</table></popup-content>";
+	currentMarker.bindPopup(popup);
+	//+document.getElementById("location").value );
+	//var x = document.getElementById("location").value;
+	//alert("Location = "+x);
+	markers.addLayer(currentMarker);
+	
+
+}
+
+//Ευρεση διπλανών αντικειμένων - δεν υλοποιήθηκε
+function nearbyLocation() {
+
+}
+
+// Δημιουργία φορμας καταχώρησης δεδομένων κατά το κλίκ στον Χάρτη
+function getFormContent() {
+        var content = "";"<h3>Your fare</h3>";
+        		
+		content += "  <form onSubmit=\"addLocationInformation(); return false;\">";
+		//content += "<div id=\"filter-container\" >";
+	    content += "<br>";
+		content += "<br>";
+		content += "<label for=\"locInfo\"><b>Location Information</b></label>";
+		content += "<input type=\"text\" placeholder=\"Enter information\" name=\"location\" >"
+		content += "<br>";
+		content += "<button type=\"submit\">Set Data</button>";
+		content += "<label>";
+		content += "</label>";
+		//content += "</div>";
+		content += "</form>";
+        return content;
+    }
+
+
+// Attach handler on dragend event
+marker.on('dragend', function (event) {
+    // Get new results based on marker's current geojson
+	//popup.setLatLng(event.latlng).openOn(this);
+	alert(event.target._latlng);
+    var results = getResults(event.target._latlng);
+    // Add the results to the featurelayer
+   /// layer.setGeoJSON(results);
+});
+
+
 
 var popupOpts = {
     autoPanPadding: new L.Point(5, 50),
@@ -73,8 +158,13 @@ var addCsvMarkers = function() {
     markers = new L.MarkerClusterGroup(clusterOptions);
     points.addData(dataCsv);
     markers.addLayer(points);
-
-    map.addLayer(markers);
+	//markers.addLayer(marker);
+    
+	
+	map.addLayer(markers);
+	
+	
+	
     try {
         var bounds = markers.getBounds();
         if (bounds) {
