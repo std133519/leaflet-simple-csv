@@ -76,19 +76,6 @@ function getFormContent() {
         return content;
     }
 
-
-// Attach handler on dragend event
-marker.on('dragend', function (event) {
-    // Get new results based on marker's current geojson
-	//popup.setLatLng(event.latlng).openOn(this);
-	alert(event.target._latlng);
-    var results = getResults(event.target._latlng);
-    // Add the results to the featurelayer
-   /// layer.setGeoJSON(results);
-});
-
-
-
 var popupOpts = {
     autoPanPadding: new L.Point(5, 50),
     autoPan: true
